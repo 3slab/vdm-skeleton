@@ -53,36 +53,36 @@ We have a VDM dataflow with 3 nodes :
 
 1. Collect
 
-    Source Transport : HTTP `https://api.openweathermap.org/data/2.5/onecall`
-    Source Message : `Vdm\Bundle\LibraryHttpTransportBundle\Message\HttpMessage`
-    Handler : [App\MessageHandler\OpenWeatherMapCollectHttpMessageHandler](src/MessageHandler/OpenWeatherMapCollectHttpMessageHandler.php)
-    Destination Transport : AMQP `amqp://guest:guest@vdm_skeleton_rabbitmq:5672/%2f` exchange `openweathermap_hourly`
-    Destination Message : [App\Message\OpenWeatherMapComputeMessage](src/Message/OpenWeatherMapComputeMessage.php)
+    * Source Transport : HTTP `https://api.openweathermap.org/data/2.5/onecall`
+    * Source Message : `Vdm\Bundle\LibraryHttpTransportBundle\Message\HttpMessage`
+    * Handler : [App\MessageHandler\OpenWeatherMapCollectHttpMessageHandler](src/MessageHandler/OpenWeatherMapCollectHttpMessageHandler.php)
+    * Destination Transport : AMQP `amqp://guest:guest@vdm_skeleton_rabbitmq:5672/%2f` exchange `openweathermap_hourly`
+    * Destination Message : [App\Message\OpenWeatherMapComputeMessage](src/Message/OpenWeatherMapComputeMessage.php)
 
-    Description : it calls the OpenWeatherMap API, send the response to the handler which loop over each hourly data,
+    * Description : it calls the OpenWeatherMap API, send the response to the handler which loop over each hourly data,
     append the latitude and longitude then send it to the destination transport.
 
 2. Compute
 
-    Source Transport : AMQP `amqp://guest:guest@vdm_skeleton_rabbitmq:5672/%2f` queue `openweathermap_hourly`
-    Source Message : [App\Message\OpenWeatherMapComputeMessage](src/Message/OpenWeatherMapComputeMessage.php)
-    Handler : [App\MessageHandler\OpenWeatherMapComputeMessageHandler](src/MessageHandler/OpenWeatherMapComputeMessageHandler.php)
-    Destination Transport : AMQP `amqp://guest:guest@vdm_skeleton_rabbitmq:5672/%2f` exchange `openweathermap_hourly_formated`
-    Destination Message : [App\Message\OpenWeatherMapStoreMessage](src/Message/OpenWeatherMapStoreMessage.php)
+    * Source Transport : AMQP `amqp://guest:guest@vdm_skeleton_rabbitmq:5672/%2f` queue `openweathermap_hourly`
+    * Source Message : [App\Message\OpenWeatherMapComputeMessage](src/Message/OpenWeatherMapComputeMessage.php)
+    * Handler : [App\MessageHandler\OpenWeatherMapComputeMessageHandler](src/MessageHandler/OpenWeatherMapComputeMessageHandler.php)
+    * Destination Transport : AMQP `amqp://guest:guest@vdm_skeleton_rabbitmq:5672/%2f` exchange `openweathermap_hourly_formated`
+    * Destination Message : [App\Message\OpenWeatherMapStoreMessage](src/Message/OpenWeatherMapStoreMessage.php)
 
-    Description : For each message, extract the useful data and format an array matching the destination entity and
+    * Description : For each message, extract the useful data and format an array matching the destination entity and
     send it to the destination transport
 
 
 3. Store
 
-    Source Transport : AMQP `amqp://guest:guest@vdm_skeleton_rabbitmq:5672/%2f` queue `openweathermap_hourly_formated`
-    Source Message : [App\Message\OpenWeatherMapStoreMessage](src/Message/OpenWeatherMapStoreMessage.php)
-    Handler : [App\MessageHandler\OpenWeatherMapStoreMessageHandler](src/MessageHandler/OpenWeatherMapStoreMessageHandler.php)
-    Destination Transport : Doctrine ORM [App\Entity\Meteo](src/Entity/Meteo.php) Entity
-    Destination Message : [App\Message\OpenWeatherMapPersistMessage](src/Message/OpenWeatherMapPersistMessage.php)
+    * Source Transport : AMQP `amqp://guest:guest@vdm_skeleton_rabbitmq:5672/%2f` queue `openweathermap_hourly_formated`
+    * Source Message : [App\Message\OpenWeatherMapStoreMessage](src/Message/OpenWeatherMapStoreMessage.php)
+    * Handler : [App\MessageHandler\OpenWeatherMapStoreMessageHandler](src/MessageHandler/OpenWeatherMapStoreMessageHandler.php)
+    * Destination Transport : Doctrine ORM [App\Entity\Meteo](src/Entity/Meteo.php) Entity
+    * Destination Message : [App\Message\OpenWeatherMapPersistMessage](src/Message/OpenWeatherMapPersistMessage.php)
 
-    Description : For each message, check if the entity exists in the db, if not it creates a new one, if yes, it 
+    * Description : For each message, check if the entity exists in the db, if not it creates a new one, if yes, it 
     updates the existing one
 
 The API is available on [http://localhost:5000](http://localhost:5000) and lists the `App\Entity\Meteo` entity.
