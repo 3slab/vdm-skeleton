@@ -1,0 +1,43 @@
+{
+    "body": {
+        "payload": {
+            "id": "2021-07-01T12:00:00+00:00-2.348800-48.853400",
+            "date": "2021-07-01T12:00:00+00:00",
+            "long": 2.3488,
+            "lat": 48.8534,
+            "temperature": 294.39,
+            "temperature_felt": 293.85,
+            "pressure": 1018,
+            "humidity": 49,
+            "weather": "Clouds"
+        },
+        "metadatas": [],
+        "traces": [
+            {
+                "name": "openweathermap_collect",
+                "event": "enter",
+                "timestamp": 1624976027.370337
+            },
+            {
+                "name": "openweathermap_collect",
+                "event": "exit",
+                "timestamp": 1624976027.399264
+            },
+            {
+                "name": "openweathermap_compute",
+                "event": "enter",
+                "timestamp": 1624976911.65231
+            },
+            {
+                "name": "openweathermap_compute",
+                "event": "exit",
+                "timestamp": 1624976911.65495
+            }
+        ]
+    },
+    "headers": {
+        "type": "App\\Message\\OpenWeatherMapStoreMessage",
+        "X-Message-Stamp-Symfony\\Component\\Messenger\\Stamp\\BusNameStamp": "[{\"busName\":\"messenger.bus.default\"}]",
+        "Content-Type": "application\/json"
+    }
+}

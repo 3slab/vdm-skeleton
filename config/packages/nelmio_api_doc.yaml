@@ -1,0 +1,9 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: OpenWeatherMap
+            description: This API returns data collected from OpenWeatherMap
+            version: 1.0.0
+    areas: # to filter documented areas
+        path_patterns:
+            - ^/(?!doc(?:.json)?$)(?!_error) # Accepts routes under / except /doc /doc.json /_error

@@ -1,0 +1,42 @@
+framework:
+    messenger:
+        serializer:
+            default_serializer: messenger.transport.symfony_serializer
+            symfony_serializer:
+                format: json
+                context:
+                    json_encode_options: !php/const JSON_PRESERVE_ZERO_FRACTION
+
+        transports:
+            openweathermap-collect:
+                dsn: "https://api.openweathermap.org/data/2.5/onecall?lon=2.3488&lat=48.8534&appid=%openweathermap.api_key%"
+                retry_strategy:
+                    max_retries: 0
+                options:
+                    method: GET
+                    http_options: {}
+                    http_executor: App\Executor\OpenWeatherMapCollectHttpExecutor
+                    monitoring:
+                        enabled: true
+                    retry:
+                        enabled: true
+                        number: 5
+                        timeBeforeRetry: 5
+
+            openweathermap-send-to-compute:
+                dsn: "%env(RABBITMQ_DSN)%"
+                retry_strategy:
+                    max_retries: 0
+                options:
+                    auto_setup: "true"
+                    heartbeat: "60"
+                    read_timeout: "60"
+                    write_timeout: "60"
+                    prefetch_count: "1"
+                    queues:
+                        "openweathermap_hourly": ~
+                    exchange:
+                        name: "openweathermap_hourly"
+
+        routing:
+            App\Message\OpenWeatherMapComputeMessage: openweathermap-send-to-compute

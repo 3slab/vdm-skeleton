@@ -1,0 +1,39 @@
+framework:
+    messenger:
+        serializer:
+            default_serializer: messenger.transport.symfony_serializer
+            symfony_serializer:
+                format: json
+                context:
+                    json_encode_options: !php/const JSON_PRESERVE_ZERO_FRACTION
+
+        transports:
+            openweathermap-store:
+                dsn: "%env(RABBITMQ_DSN)%"
+                retry_strategy:
+                    max_retries: 0
+                options:
+                    auto_setup: "true"
+                    heartbeat: "60"
+                    read_timeout: "60"
+                    write_timeout: "60"
+                    prefetch_count: "1"
+                    queues:
+                        "openweathermap_hourly_formated": ~
+
+            openweathermap-send-to-db:
+                dsn: "vdm+doctrine_orm://"
+                retry_strategy:
+                    max_retries: 0
+                options:
+                    doctrine_executor: ~
+                    default_entity: App\Entity\Meteo
+                    entities:
+                        App\Entity\Meteo:
+                            selector:
+                                - date
+                                - long
+                                - lat
+
+        routing:
+            App\Message\OpenWeatherMapPersistMessage: openweathermap-send-to-db

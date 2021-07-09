@@ -1,0 +1,8 @@
+vdm_prometheus:
+  app: '%env(VDM_APP_NAME)%'
+  namespace: vdm
+  register_default_metrics: true
+  secret: ~
+  metrics_path: /metrics
+  storage:
+    type: apcu

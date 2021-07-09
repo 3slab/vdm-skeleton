@@ -1,0 +1,22 @@
+framework:
+    messenger:
+        serializer:
+            default_serializer: messenger.transport.symfony_serializer
+            symfony_serializer:
+                format: json
+                context:
+                    json_encode_options: !php/const JSON_PRESERVE_ZERO_FRACTION
+
+        transports:
+            openweathermap-collect:
+                dsn: "vdm+local://%kernel.project_dir%/local/openweathermap-collect.json?encodeBody=json"
+                retry_strategy:
+                    max_retries: 0
+
+            openweathermap-send-to-compute:
+                dsn: "vdm+local://%kernel.project_dir%/local/openweathermap-collect-output.json?encodeBody=json"
+                retry_strategy:
+                    max_retries: 0
+
+        routing:
+            App\Message\OpenWeatherMapComputeMessage: openweathermap-send-to-compute

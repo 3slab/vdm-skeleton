@@ -1,0 +1,10 @@
+vdm_healthcheck:
+  secret: ~
+  liveness_path: /liveness
+  liveness_checkers: {}
+  readiness_path: /readiness
+  readiness_checkers:
+    db:
+      type: dbal
+      arguments:
+        - '@doctrine.dbal.default_connection'

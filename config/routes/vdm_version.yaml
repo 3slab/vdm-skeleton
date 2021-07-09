@@ -1,0 +1,3 @@
+vdm_version:
+  resource: "@VdmVersionBundle/Resources/config/routing.yml"
+  prefix:   /

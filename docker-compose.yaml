@@ -1,0 +1,61 @@
+version: "3.4"
+
+services:
+  vdm_skeleton_data_app:
+    container_name: 'vdm_skeleton_data_app'
+    working_dir: '/var/www/html'
+    build:
+      context: './'
+      dockerfile: './Dockerfile-vdm'
+    command: ["/bin/sh", "-c", "sleep 10000000"]
+    volumes:
+      - '.:/var/www/html'
+    environment:
+      DATABASE_URL: postgresql://vdm:vdm@vdm_skeleton_postgres:5432/vdm?serverVersion=13&charset=utf8
+      RABBITMQ_DSN: amqp://guest:guest@vdm_skeleton_rabbitmq:5672/%2f
+    env_file: './.env.secrets'
+    depends_on:
+      - 'vdm_skeleton_rabbitmq'
+      - 'vdm_skeleton_postgres'
+
+  vdm_skeleton_api_app:
+    container_name: 'vdm_skeleton_api_app'
+    working_dir: '/var/www/html'
+    ports: ["5000:80"]
+    build:
+      context: './'
+      dockerfile: './Dockerfile-api'
+    command: ["/bin/sh", "-c", "COMPOSER_MEMORY_LIMIT=-1 composer update -n && composer clearcache -n && chmod 777 -R vendor/ var/ composer.lock && /start.sh"]
+    volumes:
+      - '.:/var/www/html'
+    environment:
+      APP_ENV: dev
+      DATABASE_URL: postgresql://vdm:vdm@vdm_skeleton_postgres:5432/vdm?serverVersion=13&charset=utf8
+      RUN_SCRIPTS: 1
+      PHP_ERRORS_STDERR: 1
+    depends_on:
+      - 'vdm_skeleton_postgres'
+
+  vdm_skeleton_rabbitmq:
+    image: rabbitmq:3-management
+    container_name: vdm_skeleton_rabbitmq
+    ports: ["15672:15672"]
+
+  vdm_skeleton_postgres:
+    image: postgres
+    container_name: vdm_skeleton_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: vdm
+      POSTGRES_PASSWORD: vdm
+      POSTGRES_DB: vdm
+      PGDATA: /var/lib/postgresql/data/pgdata
+
+  vdm_skeleton_adminer:
+    image: adminer
+    container_name: vdm_skeleton_adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - vdm_skeleton_postgres
